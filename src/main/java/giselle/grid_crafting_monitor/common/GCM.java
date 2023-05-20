@@ -104,7 +104,7 @@ public class GCM
 	public static void openGui(ServerPlayer player, CraftingMonitorBlockEntity craftingMonitorBE)
 	{
 		CraftingMonitorNetworkNode node = craftingMonitorBE.getNode();
-		CraftingMonitorMenuProvider provider = new CraftingMonitorMenuProvider(RSContainerMenus.CRAFTING_MONITOR, node, craftingMonitorBE);
+		CraftingMonitorMenuProvider provider = new CraftingMonitorMenuProvider(RSContainerMenus.CRAFTING_MONITOR.get(), node, craftingMonitorBE);
 		Component displayName = provider.getDisplayName();
 		GCM.NETWORK_HANDLER.sendTo(player, new CCraftingMonitorOpenResultMessage(new LevelBlockPos(node.getNetwork()), displayName));
 	}

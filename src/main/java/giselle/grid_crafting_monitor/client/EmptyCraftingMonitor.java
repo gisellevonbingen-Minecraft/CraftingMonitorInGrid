@@ -11,7 +11,6 @@ import com.refinedmods.refinedstorage.blockentity.craftingmonitor.ICraftingMonit
 import com.refinedmods.refinedstorage.blockentity.data.BlockEntitySynchronizationParameter;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
@@ -64,7 +63,7 @@ public class EmptyCraftingMonitor implements ICraftingMonitor
 	@Override
 	public Component getTitle()
 	{
-		return new TranslatableComponent("gui.refinedstorage.crafting_monitor");
+		return Component.translatable("gui.refinedstorage.crafting_monitor");
 	}
 
 	@Override

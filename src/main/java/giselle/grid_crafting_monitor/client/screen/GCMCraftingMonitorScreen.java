@@ -18,7 +18,6 @@ import giselle.grid_crafting_monitor.common.network.SCraftingMonitorStopMonitori
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Inventory;
 
 public class GCMCraftingMonitorScreen extends CraftingMonitorScreen
@@ -46,8 +45,8 @@ public class GCMCraftingMonitorScreen extends CraftingMonitorScreen
 
 		tabs.init(this.width);
 
-		Component cancel = new TranslatableComponent("gui.cancel");
-		Component cancelAll = new TranslatableComponent("misc.refinedstorage.cancel_all");
+		Component cancel = Component.translatable("gui.cancel");
+		Component cancelAll = Component.translatable("misc.refinedstorage.cancel_all");
 
 		int cancelButtonWidth = 14 + this.font.width(cancel.getString());
 		int cancelAllButtonWidth = 14 + this.font.width(cancelAll.getString());

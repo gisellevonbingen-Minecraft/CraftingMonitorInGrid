@@ -14,7 +14,7 @@ public class EventHandlers
 	@SubscribeEvent
 	public static void onPlayerContainerOpen(PlayerContainerEvent.Open e)
 	{
-		if (e.getPlayer() instanceof ServerPlayer player && e.getContainer() instanceof GridContainerMenu container)
+		if (e.getEntity() instanceof ServerPlayer player && e.getContainer() instanceof GridContainerMenu container)
 		{
 			if (container.getGrid() instanceof INetworkAwareGrid grid)
 			{

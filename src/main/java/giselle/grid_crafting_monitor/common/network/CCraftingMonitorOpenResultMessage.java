@@ -49,7 +49,7 @@ public class CCraftingMonitorOpenResultMessage extends NetworkMessage
 		{
 			Minecraft minecraft = Minecraft.getInstance();
 			Player player = minecraft.player;
-			CraftingMonitorContainerMenu container = new CraftingMonitorContainerMenu(RSContainerMenus.CRAFTING_MONITOR, new EmptyCraftingMonitor(), null, player, 0);
+			CraftingMonitorContainerMenu container = new CraftingMonitorContainerMenu(RSContainerMenus.CRAFTING_MONITOR.get(), new EmptyCraftingMonitor(), null, player, 0);
 			GCMCraftingMonitorScreen screen = new GCMCraftingMonitorScreen(container, player.getInventory(), message, minecraft.screen);
 			minecraft.setScreen(screen);
 		});

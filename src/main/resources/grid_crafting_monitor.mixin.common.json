@@ -1,0 +1,10 @@
+{
+	"required": true,
+	"package": "giselle.grid_crafting_monitor.common.mixin",
+	"compatibilityLevel": "JAVA_8",
+	"client": [],
+	"mixins": [],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

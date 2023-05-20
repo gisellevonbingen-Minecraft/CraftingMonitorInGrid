@@ -2,34 +2,34 @@ package giselle.grid_crafting_monitor.common.network;
 
 import java.util.function.Supplier;
 
-import com.refinedmods.refinedstorage.RSContainers;
-import com.refinedmods.refinedstorage.container.CraftingMonitorContainer;
+import com.refinedmods.refinedstorage.RSContainerMenus;
+import com.refinedmods.refinedstorage.container.CraftingMonitorContainerMenu;
 
 import giselle.grid_crafting_monitor.client.EmptyCraftingMonitor;
 import giselle.grid_crafting_monitor.client.screen.GCMCraftingMonitorScreen;
 import giselle.grid_crafting_monitor.common.LevelBlockPos;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.NetworkEvent;
 
 public class CCraftingMonitorOpenResultMessage extends NetworkMessage
 {
-	private ITextComponent displayName;
+	private Component displayName;
 
 	protected CCraftingMonitorOpenResultMessage()
 	{
 
 	}
 
-	public CCraftingMonitorOpenResultMessage(LevelBlockPos networkPos, ITextComponent displayName)
+	public CCraftingMonitorOpenResultMessage(LevelBlockPos networkPos, Component displayName)
 	{
 		super(networkPos);
 		this.displayName = displayName;
 	}
 
-	public static CCraftingMonitorOpenResultMessage decode(PacketBuffer buf)
+	public static CCraftingMonitorOpenResultMessage decode(FriendlyByteBuf buf)
 	{
 		CCraftingMonitorOpenResultMessage message = new CCraftingMonitorOpenResultMessage();
 		NetworkMessage.decode(message, buf);
@@ -37,7 +37,7 @@ public class CCraftingMonitorOpenResultMessage extends NetworkMessage
 		return message;
 	}
 
-	public static void encode(CCraftingMonitorOpenResultMessage message, PacketBuffer buf)
+	public static void encode(CCraftingMonitorOpenResultMessage message, FriendlyByteBuf buf)
 	{
 		NetworkMessage.encode(message, buf);
 		buf.writeComponent(message.getDisplayName());
@@ -48,15 +48,15 @@ public class CCraftingMonitorOpenResultMessage extends NetworkMessage
 		ctx.get().enqueueWork(() ->
 		{
 			Minecraft minecraft = Minecraft.getInstance();
-			PlayerEntity player = minecraft.player;
-			CraftingMonitorContainer container = new CraftingMonitorContainer(RSContainers.CRAFTING_MONITOR, new EmptyCraftingMonitor(), null, player, 0);
-			GCMCraftingMonitorScreen screen = new GCMCraftingMonitorScreen(container, player.inventory, message, minecraft.screen);
+			Player player = minecraft.player;
+			CraftingMonitorContainerMenu container = new CraftingMonitorContainerMenu(RSContainerMenus.CRAFTING_MONITOR, new EmptyCraftingMonitor(), null, player, 0);
+			GCMCraftingMonitorScreen screen = new GCMCraftingMonitorScreen(container, player.getInventory(), message, minecraft.screen);
 			minecraft.setScreen(screen);
 		});
 		ctx.get().setPacketHandled(true);
 	}
 
-	public ITextComponent getDisplayName()
+	public Component getDisplayName()
 	{
 		return this.displayName;
 	}

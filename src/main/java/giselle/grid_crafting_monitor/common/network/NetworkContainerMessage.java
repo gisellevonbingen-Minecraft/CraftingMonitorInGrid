@@ -1,7 +1,7 @@
 package giselle.grid_crafting_monitor.common.network;
 
 import giselle.grid_crafting_monitor.common.LevelBlockPos;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 public abstract class NetworkContainerMessage extends NetworkMessage
 {
@@ -18,13 +18,13 @@ public abstract class NetworkContainerMessage extends NetworkMessage
 		this.containerId = containerId;
 	}
 
-	protected static void decode(NetworkContainerMessage message, PacketBuffer buf)
+	protected static void decode(NetworkContainerMessage message, FriendlyByteBuf buf)
 	{
 		NetworkMessage.decode(message, buf);
 		message.containerId = buf.readInt();
 	}
 
-	protected static void encode(NetworkContainerMessage message, PacketBuffer buf)
+	protected static void encode(NetworkContainerMessage message, FriendlyByteBuf buf)
 	{
 		NetworkMessage.encode(message, buf);
 		buf.writeInt(message.getContainerId());

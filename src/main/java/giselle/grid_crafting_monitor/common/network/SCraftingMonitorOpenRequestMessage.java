@@ -3,13 +3,13 @@ package giselle.grid_crafting_monitor.common.network;
 import java.util.function.Supplier;
 
 import com.refinedmods.refinedstorage.api.network.INetwork;
-import com.refinedmods.refinedstorage.tile.craftingmonitor.CraftingMonitorTile;
+import com.refinedmods.refinedstorage.blockentity.craftingmonitor.CraftingMonitorBlockEntity;
 
 import giselle.grid_crafting_monitor.common.GCM;
 import giselle.grid_crafting_monitor.common.LevelBlockPos;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.network.NetworkEvent;
 
 public class SCraftingMonitorOpenRequestMessage extends NetworkMessage
 {
@@ -23,14 +23,14 @@ public class SCraftingMonitorOpenRequestMessage extends NetworkMessage
 		super(networkPos);
 	}
 
-	public static SCraftingMonitorOpenRequestMessage decode(PacketBuffer buf)
+	public static SCraftingMonitorOpenRequestMessage decode(FriendlyByteBuf buf)
 	{
 		SCraftingMonitorOpenRequestMessage message = new SCraftingMonitorOpenRequestMessage();
 		NetworkMessage.decode(message, buf);
 		return message;
 	}
 
-	public static void encode(SCraftingMonitorOpenRequestMessage message, PacketBuffer buf)
+	public static void encode(SCraftingMonitorOpenRequestMessage message, FriendlyByteBuf buf)
 	{
 		NetworkMessage.encode(message, buf);
 	}
@@ -39,12 +39,12 @@ public class SCraftingMonitorOpenRequestMessage extends NetworkMessage
 	{
 		ctx.get().enqueueWork(() ->
 		{
-			ServerPlayerEntity player = ctx.get().getSender();
+			ServerPlayer player = ctx.get().getSender();
 			INetwork network = GCM.getNetwork(player, message.getNetworkPos());
 
 			if (network != null)
 			{
-				CraftingMonitorTile craftingMonitor = GCM.findCraftingMontior(network);
+				CraftingMonitorBlockEntity craftingMonitor = GCM.findCraftingMontior(network);
 				GCM.openGui(player, craftingMonitor);
 			}
 

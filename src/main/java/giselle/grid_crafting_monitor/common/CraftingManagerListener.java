@@ -2,19 +2,19 @@ package giselle.grid_crafting_monitor.common;
 
 import com.refinedmods.refinedstorage.api.autocrafting.craftingmonitor.ICraftingMonitorListener;
 import com.refinedmods.refinedstorage.api.network.INetwork;
+import com.refinedmods.refinedstorage.blockentity.craftingmonitor.ICraftingMonitor;
 import com.refinedmods.refinedstorage.network.craftingmonitor.CraftingMonitorUpdateMessage;
-import com.refinedmods.refinedstorage.tile.craftingmonitor.ICraftingMonitor;
 
 import giselle.grid_crafting_monitor.common.network.CCraftingMonitorUpdateMessage;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 public class CraftingManagerListener implements ICraftingMonitorListener
 {
-	private final ServerPlayerEntity player;
+	private final ServerPlayer player;
 	private final INetwork network;
 	private final ICraftingMonitor craftingMonitor;
 
-	public CraftingManagerListener(ServerPlayerEntity player, INetwork network, ICraftingMonitor craftingMonitor)
+	public CraftingManagerListener(ServerPlayer player, INetwork network, ICraftingMonitor craftingMonitor)
 	{
 		this.player = player;
 		this.network = network;
@@ -38,7 +38,7 @@ public class CraftingManagerListener implements ICraftingMonitorListener
 		this.send();
 	}
 
-	public ServerPlayerEntity getPlayer()
+	public ServerPlayer getPlayer()
 	{
 		return this.player;
 	}

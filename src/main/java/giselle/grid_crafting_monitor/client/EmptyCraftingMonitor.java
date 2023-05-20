@@ -7,13 +7,13 @@ import java.util.UUID;
 
 import com.refinedmods.refinedstorage.api.autocrafting.ICraftingManager;
 import com.refinedmods.refinedstorage.api.autocrafting.task.ICraftingTask;
-import com.refinedmods.refinedstorage.tile.craftingmonitor.ICraftingMonitor;
-import com.refinedmods.refinedstorage.tile.data.TileDataParameter;
+import com.refinedmods.refinedstorage.blockentity.craftingmonitor.ICraftingMonitor;
+import com.refinedmods.refinedstorage.blockentity.data.BlockEntitySynchronizationParameter;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 
 public class EmptyCraftingMonitor implements ICraftingMonitor
 {
@@ -32,7 +32,7 @@ public class EmptyCraftingMonitor implements ICraftingMonitor
 	}
 
 	@Override
-	public TileDataParameter<Integer, ?> getRedstoneModeParameter()
+	public BlockEntitySynchronizationParameter<Integer, ?> getRedstoneModeParameter()
 	{
 		return null;
 	}
@@ -62,9 +62,9 @@ public class EmptyCraftingMonitor implements ICraftingMonitor
 	}
 
 	@Override
-	public ITextComponent getTitle()
+	public Component getTitle()
 	{
-		return new TranslationTextComponent("gui.refinedstorage.crafting_monitor");
+		return new TranslatableComponent("gui.refinedstorage.crafting_monitor");
 	}
 
 	@Override
@@ -74,13 +74,13 @@ public class EmptyCraftingMonitor implements ICraftingMonitor
 	}
 
 	@Override
-	public void onCancelled(ServerPlayerEntity player, UUID id)
+	public void onCancelled(ServerPlayer player, UUID id)
 	{
 
 	}
 
 	@Override
-	public void onClosed(PlayerEntity player)
+	public void onClosed(Player player)
 	{
 
 	}

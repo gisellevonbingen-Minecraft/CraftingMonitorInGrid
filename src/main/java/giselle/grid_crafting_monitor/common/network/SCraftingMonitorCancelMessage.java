@@ -9,9 +9,9 @@ import com.refinedmods.refinedstorage.api.network.INetwork;
 
 import giselle.grid_crafting_monitor.common.GCM;
 import giselle.grid_crafting_monitor.common.LevelBlockPos;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.network.NetworkEvent;
 
 public class SCraftingMonitorCancelMessage extends NetworkMessage
 {
@@ -29,7 +29,7 @@ public class SCraftingMonitorCancelMessage extends NetworkMessage
 		this.taskId = taskId;
 	}
 
-	public static SCraftingMonitorCancelMessage decode(PacketBuffer buf)
+	public static SCraftingMonitorCancelMessage decode(FriendlyByteBuf buf)
 	{
 		SCraftingMonitorCancelMessage message = new SCraftingMonitorCancelMessage();
 		NetworkMessage.decode(message, buf);
@@ -48,7 +48,7 @@ public class SCraftingMonitorCancelMessage extends NetworkMessage
 		return message;
 	}
 
-	public static void encode(SCraftingMonitorCancelMessage message, PacketBuffer buf)
+	public static void encode(SCraftingMonitorCancelMessage message, FriendlyByteBuf buf)
 	{
 		NetworkMessage.encode(message, buf);
 
@@ -66,7 +66,7 @@ public class SCraftingMonitorCancelMessage extends NetworkMessage
 	{
 		ctx.get().enqueueWork(() ->
 		{
-			ServerPlayerEntity player = ctx.get().getSender();
+			ServerPlayer player = ctx.get().getSender();
 			INetwork network = GCM.getNetwork(player, message.getNetworkPos());
 
 			if (network != null)

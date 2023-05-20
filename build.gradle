@@ -23,7 +23,7 @@ archivesBaseName = rootProject.archives_base_name
 version = "${rootProject.mc_version}-${rootProject.mod_version}"
 group = rootProject.maven_group
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 println("Java: " + System.getProperty("java.version") + " JVM: " + System.getProperty("java.vm.version") + "(" + System.getProperty("java.vendor") + ") Arch: " + System.getProperty("os.arch"))
 
 minecraft {

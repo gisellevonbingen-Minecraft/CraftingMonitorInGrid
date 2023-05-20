@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 import com.refinedmods.refinedstorage.api.network.grid.IGridTab;
-import com.refinedmods.refinedstorage.container.CraftingMonitorContainer;
+import com.refinedmods.refinedstorage.container.CraftingMonitorContainerMenu;
 import com.refinedmods.refinedstorage.screen.CraftingMonitorScreen;
 import com.refinedmods.refinedstorage.screen.widget.TabListWidget;
 
@@ -25,9 +25,9 @@ public abstract class CraftingMonitorScreenMixin implements ICraftingMonitorScre
 	}
 
 	@Shadow(remap = false)
-	private TabListWidget<CraftingMonitorContainer> tabs;
+	private TabListWidget<CraftingMonitorContainerMenu> tabs;
 
-	public TabListWidget<CraftingMonitorContainer> gcm$getTabs()
+	public TabListWidget<CraftingMonitorContainerMenu> gcm$getTabs()
 	{
 		return this.tabs;
 	}

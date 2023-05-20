@@ -5,20 +5,20 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.refinedmods.refinedstorage.container.GridContainer;
+import com.refinedmods.refinedstorage.container.GridContainerMenu;
 import com.refinedmods.refinedstorage.screen.BaseScreen;
 import com.refinedmods.refinedstorage.screen.grid.GridScreen;
 
 import giselle.grid_crafting_monitor.client.IGridScreenExtension;
 import giselle.grid_crafting_monitor.client.screen.CraftingMonitorButton;
 import giselle.grid_crafting_monitor.common.LevelBlockPos;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
 
 @Mixin(GridScreen.class)
-public abstract class GridScreenMixin extends BaseScreen<GridContainer> implements IGridScreenExtension
+public abstract class GridScreenMixin extends BaseScreen<GridContainerMenu> implements IGridScreenExtension
 {
-	protected GridScreenMixin(GridContainer container, int xSize, int ySize, PlayerInventory inventory, ITextComponent title)
+	protected GridScreenMixin(GridContainerMenu container, int xSize, int ySize, Inventory inventory, Component title)
 	{
 		super(container, xSize, ySize, inventory, title);
 	}

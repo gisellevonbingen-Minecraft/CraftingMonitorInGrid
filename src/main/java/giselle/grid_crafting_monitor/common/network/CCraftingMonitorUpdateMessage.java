@@ -6,8 +6,8 @@ import com.refinedmods.refinedstorage.network.craftingmonitor.CraftingMonitorUpd
 import com.refinedmods.refinedstorage.screen.BaseScreen;
 
 import giselle.grid_crafting_monitor.client.screen.GCMCraftingMonitorScreen;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 public class CCraftingMonitorUpdateMessage
 {
@@ -18,13 +18,13 @@ public class CCraftingMonitorUpdateMessage
 		this.impl = impl;
 	}
 
-	public static CCraftingMonitorUpdateMessage decode(PacketBuffer buf)
+	public static CCraftingMonitorUpdateMessage decode(FriendlyByteBuf buf)
 	{
 		CraftingMonitorUpdateMessage impl = CraftingMonitorUpdateMessage.decode(buf);
 		return new CCraftingMonitorUpdateMessage(impl);
 	}
 
-	public static void encode(CCraftingMonitorUpdateMessage message, PacketBuffer buf)
+	public static void encode(CCraftingMonitorUpdateMessage message, FriendlyByteBuf buf)
 	{
 		CraftingMonitorUpdateMessage.encode(message.getImpl(), buf);
 	}

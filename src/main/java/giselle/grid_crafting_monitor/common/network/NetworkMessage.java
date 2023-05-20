@@ -1,7 +1,7 @@
 package giselle.grid_crafting_monitor.common.network;
 
 import giselle.grid_crafting_monitor.common.LevelBlockPos;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 public abstract class NetworkMessage
 {
@@ -17,12 +17,12 @@ public abstract class NetworkMessage
 		this.networkPos = networkPos;
 	}
 
-	protected static void decode(NetworkMessage message, PacketBuffer buf)
+	protected static void decode(NetworkMessage message, FriendlyByteBuf buf)
 	{
 		message.networkPos = new LevelBlockPos(buf);
 	}
 
-	protected static void encode(NetworkMessage message, PacketBuffer buf)
+	protected static void encode(NetworkMessage message, FriendlyByteBuf buf)
 	{
 		message.getNetworkPos().encode(buf);
 	}

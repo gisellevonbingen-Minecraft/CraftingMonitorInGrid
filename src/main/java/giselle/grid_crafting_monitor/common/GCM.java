@@ -10,27 +10,25 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.refinedmods.refinedstorage.RSContainers;
+import com.refinedmods.refinedstorage.RSContainerMenus;
 import com.refinedmods.refinedstorage.api.network.INetwork;
 import com.refinedmods.refinedstorage.api.network.INetworkNodeGraphEntry;
-import com.refinedmods.refinedstorage.api.network.node.INetworkNode;
 import com.refinedmods.refinedstorage.apiimpl.API;
 import com.refinedmods.refinedstorage.apiimpl.network.node.CraftingMonitorNetworkNode;
-import com.refinedmods.refinedstorage.container.factory.CraftingMonitorContainerProvider;
-import com.refinedmods.refinedstorage.tile.craftingmonitor.CraftingMonitorTile;
+import com.refinedmods.refinedstorage.blockentity.craftingmonitor.CraftingMonitorBlockEntity;
+import com.refinedmods.refinedstorage.container.factory.CraftingMonitorMenuProvider;
 
 import giselle.grid_crafting_monitor.client.GCMClient;
 import giselle.grid_crafting_monitor.common.network.CCraftingMonitorOpenResultMessage;
 import giselle.grid_crafting_monitor.common.network.NetworkHandler;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -65,9 +63,9 @@ public class GCM
 		NETWORK_HANDLER.register();
 	}
 
-	public static void startMonitoring(ServerPlayerEntity player, INetwork network)
+	public static void startMonitoring(ServerPlayer player, INetwork network)
 	{
-		CraftingMonitorTile craftingMontior = GCM.findCraftingMontior(network);
+		CraftingMonitorBlockEntity craftingMontior = GCM.findCraftingMontior(network);
 
 		if (craftingMontior != null)
 		{
@@ -78,7 +76,7 @@ public class GCM
 
 	}
 
-	public static void stopMonitoring(ServerPlayerEntity player, INetwork network)
+	public static void stopMonitoring(ServerPlayer player, INetwork network)
 	{
 		List<CraftingManagerListener> list = getMonitorings(player);
 		List<CraftingManagerListener> filetered = list.stream().filter(l -> l.getNetwork() == network).collect(Collectors.toList());
@@ -91,49 +89,44 @@ public class GCM
 
 	}
 
-	private static List<CraftingManagerListener> getMonitorings(ServerPlayerEntity player)
+	private static List<CraftingManagerListener> getMonitorings(ServerPlayer player)
 	{
 		return LISTENERS.computeIfAbsent(player.getUUID(), k -> new ArrayList<>());
 	}
 
-	public static INetwork getNetwork(ServerPlayerEntity player, LevelBlockPos networkPos)
+	public static INetwork getNetwork(ServerPlayer player, LevelBlockPos networkPos)
 	{
-		RegistryKey<World> networkLevelKey = RegistryKey.create(Registry.DIMENSION_REGISTRY, networkPos.getLevelName());
-		ServerWorld networkLevel = player.getServer().getLevel(networkLevelKey);
+		ResourceKey<Level> networkLevelKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, networkPos.getLevelName());
+		ServerLevel networkLevel = player.getServer().getLevel(networkLevelKey);
 		return API.instance().getNetworkManager(networkLevel).getNetwork(networkPos.getPos());
 	}
 
-	public static void openGui(ServerPlayerEntity player, CraftingMonitorTile craftingMonitorBE)
+	public static void openGui(ServerPlayer player, CraftingMonitorBlockEntity craftingMonitorBE)
 	{
 		CraftingMonitorNetworkNode node = craftingMonitorBE.getNode();
-		CraftingMonitorContainerProvider provider = new CraftingMonitorContainerProvider(RSContainers.CRAFTING_MONITOR, node, craftingMonitorBE);
-		ITextComponent displayName = provider.getDisplayName();
+		CraftingMonitorMenuProvider provider = new CraftingMonitorMenuProvider(RSContainerMenus.CRAFTING_MONITOR, node, craftingMonitorBE);
+		Component displayName = provider.getDisplayName();
 		GCM.NETWORK_HANDLER.sendTo(player, new CCraftingMonitorOpenResultMessage(new LevelBlockPos(node.getNetwork()), displayName));
 	}
 
-	public static CraftingMonitorTile findCraftingMontior(INetwork network)
+	public static CraftingMonitorBlockEntity findCraftingMontior(INetwork network)
 	{
 		CraftingMonitorNetworkNode node = NOCDE_CACHE.get(network);
 
 		if (node != null)
 		{
-			BlockPos pos = node.getPos();
-			TileEntity blockEntity = node.getWorld().getBlockEntity(pos);
-
-			if (blockEntity instanceof CraftingMonitorTile)
+			if (node.getLevel().getBlockEntity(node.getPos()) instanceof CraftingMonitorBlockEntity blockEntity)
 			{
-				CraftingMonitorTile craftingMonitorBlockEntity = (CraftingMonitorTile) blockEntity;
-
-				if (craftingMonitorBlockEntity.getNode().getNetwork() == network)
+				if (blockEntity.getNode().getNetwork() == network)
 				{
-					return craftingMonitorBlockEntity;
+					return blockEntity;
 				}
 
 			}
 
 		}
 
-		CraftingMonitorTile craftingMonitorBlockEntity = findCraftingMontior0(network);
+		CraftingMonitorBlockEntity craftingMonitorBlockEntity = findCraftingMontior0(network);
 
 		if (craftingMonitorBlockEntity != null)
 		{
@@ -147,7 +140,7 @@ public class GCM
 		return craftingMonitorBlockEntity;
 	}
 
-	private static CraftingMonitorTile findCraftingMontior0(INetwork network)
+	private static CraftingMonitorBlockEntity findCraftingMontior0(INetwork network)
 	{
 		if (network == null)
 		{
@@ -156,17 +149,14 @@ public class GCM
 
 		for (INetworkNodeGraphEntry entry : network.getNodeGraph().all())
 		{
-			INetworkNode node = entry.getNode();
-
-			if (node instanceof CraftingMonitorNetworkNode)
+			if (entry.getNode() instanceof CraftingMonitorNetworkNode node)
 			{
 				BlockPos pos = node.getPos();
-				World level = node.getWorld();
-				TileEntity blockEntity = level.getBlockEntity(pos);
+				Level level = node.getLevel();
 
-				if (blockEntity instanceof CraftingMonitorTile)
+				if (level.getBlockEntity(pos) instanceof CraftingMonitorBlockEntity blockEntity)
 				{
-					return (CraftingMonitorTile) blockEntity;
+					return blockEntity;
 				}
 
 			}

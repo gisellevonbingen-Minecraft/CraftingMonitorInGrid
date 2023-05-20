@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.refinedmods.refinedstorage.api.network.grid.IGridTab;
-import com.refinedmods.refinedstorage.container.CraftingMonitorContainer;
+import com.refinedmods.refinedstorage.container.CraftingMonitorContainerMenu;
 import com.refinedmods.refinedstorage.screen.CraftingMonitorScreen;
 import com.refinedmods.refinedstorage.screen.widget.TabListWidget;
 
@@ -15,11 +15,11 @@ import giselle.grid_crafting_monitor.common.LevelBlockPos;
 import giselle.grid_crafting_monitor.common.network.CCraftingMonitorOpenResultMessage;
 import giselle.grid_crafting_monitor.common.network.SCraftingMonitorCancelMessage;
 import giselle.grid_crafting_monitor.common.network.SCraftingMonitorStopMonitoringMessage;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.player.Inventory;
 
 public class GCMCraftingMonitorScreen extends CraftingMonitorScreen
 {
@@ -29,7 +29,7 @@ public class GCMCraftingMonitorScreen extends CraftingMonitorScreen
 	private Button cancelButton;
 	private Button cancelAllButton;
 
-	public GCMCraftingMonitorScreen(CraftingMonitorContainer container, PlayerInventory inventory, CCraftingMonitorOpenResultMessage message, Screen parent)
+	public GCMCraftingMonitorScreen(CraftingMonitorContainerMenu container, Inventory inventory, CCraftingMonitorOpenResultMessage message, Screen parent)
 	{
 		super(container, inventory, message.getDisplayName());
 
@@ -41,13 +41,13 @@ public class GCMCraftingMonitorScreen extends CraftingMonitorScreen
 	public void onPostInit(int x, int y)
 	{
 		ICraftingMonitorScreenExtension extension = (ICraftingMonitorScreenExtension) this;
-		TabListWidget<CraftingMonitorContainer> tabs = extension.gcm$getTabs();
+		TabListWidget<CraftingMonitorContainerMenu> tabs = extension.gcm$getTabs();
 		List<IGridTab> tasks = extension.gcm$getTasks();
 
 		tabs.init(this.width);
 
-		ITextComponent cancel = new TranslationTextComponent("gui.cancel");
-		ITextComponent cancelAll = new TranslationTextComponent("misc.refinedstorage.cancel_all");
+		Component cancel = new TranslatableComponent("gui.cancel");
+		Component cancelAll = new TranslatableComponent("misc.refinedstorage.cancel_all");
 
 		int cancelButtonWidth = 14 + this.font.width(cancel.getString());
 		int cancelAllButtonWidth = 14 + this.font.width(cancelAll.getString());

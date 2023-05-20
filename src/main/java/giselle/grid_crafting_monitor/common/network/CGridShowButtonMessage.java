@@ -7,8 +7,8 @@ import com.refinedmods.refinedstorage.screen.grid.GridScreen;
 import giselle.grid_crafting_monitor.client.IGridScreenExtension;
 import giselle.grid_crafting_monitor.common.LevelBlockPos;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 public class CGridShowButtonMessage extends NetworkContainerMessage
 {
@@ -22,14 +22,14 @@ public class CGridShowButtonMessage extends NetworkContainerMessage
 		super(networkPos, containerId);
 	}
 
-	public static CGridShowButtonMessage decode(PacketBuffer buf)
+	public static CGridShowButtonMessage decode(FriendlyByteBuf buf)
 	{
 		CGridShowButtonMessage message = new CGridShowButtonMessage();
 		NetworkContainerMessage.decode(message, buf);
 		return message;
 	}
 
-	public static void encode(CGridShowButtonMessage message, PacketBuffer buf)
+	public static void encode(CGridShowButtonMessage message, FriendlyByteBuf buf)
 	{
 		NetworkContainerMessage.encode(message, buf);
 	}
@@ -40,15 +40,9 @@ public class CGridShowButtonMessage extends NetworkContainerMessage
 		{
 			Minecraft minecraft = Minecraft.getInstance();
 
-			if (minecraft.screen instanceof GridScreen)
+			if (minecraft.screen instanceof GridScreen screen && screen.getMenu().containerId == message.getContainerId())
 			{
-				GridScreen screen = (GridScreen) minecraft.screen;
-
-				if (screen.getMenu().containerId == message.getContainerId())
-				{
-					((IGridScreenExtension) screen).gcm$setNetworkPos(message.getNetworkPos());
-				}
-
+				((IGridScreenExtension) screen).gcm$setNetworkPos(message.getNetworkPos());
 			}
 
 		});

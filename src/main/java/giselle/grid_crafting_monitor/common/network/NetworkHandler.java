@@ -1,11 +1,11 @@
 package giselle.grid_crafting_monitor.common.network;
 
 import giselle.grid_crafting_monitor.common.GCM;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 public class NetworkHandler
 {
@@ -30,7 +30,7 @@ public class NetworkHandler
 		this.channel.registerMessage(id++, SCraftingMonitorCancelMessage.class, SCraftingMonitorCancelMessage::encode, SCraftingMonitorCancelMessage::decode, SCraftingMonitorCancelMessage::handle);
 	}
 
-	public void sendTo(ServerPlayerEntity player, Object message)
+	public void sendTo(ServerPlayer player, Object message)
 	{
 		this.channel.send(PacketDistributor.PLAYER.with(() -> player), message);
 	}

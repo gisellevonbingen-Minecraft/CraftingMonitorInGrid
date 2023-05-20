@@ -2,11 +2,11 @@ package giselle.grid_crafting_monitor.common;
 
 import com.refinedmods.refinedstorage.api.network.INetwork;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class LevelBlockPos
 {
@@ -19,28 +19,28 @@ public class LevelBlockPos
 		this.pos = pos;
 	}
 
-	public LevelBlockPos(World level, BlockPos pos)
+	public LevelBlockPos(Level level, BlockPos pos)
 	{
 		this(level.dimension().location(), pos);
 	}
 
-	public LevelBlockPos(TileEntity blockEntity)
+	public LevelBlockPos(BlockEntity blockEntity)
 	{
 		this(blockEntity.getLevel(), blockEntity.getBlockPos());
 	}
 
 	public LevelBlockPos(INetwork network)
 	{
-		this(network.getWorld(), network.getPosition());
+		this(network.getLevel(), network.getPosition());
 	}
 
-	public LevelBlockPos(PacketBuffer buf)
+	public LevelBlockPos(FriendlyByteBuf buf)
 	{
 		this.levelName = buf.readResourceLocation();
 		this.pos = buf.readBlockPos();
 	}
 
-	public void encode(PacketBuffer buf)
+	public void encode(FriendlyByteBuf buf)
 	{
 		buf.writeResourceLocation(this.levelName);
 		buf.writeBlockPos(this.pos);

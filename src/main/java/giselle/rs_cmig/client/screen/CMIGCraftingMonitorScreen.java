@@ -20,7 +20,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
-public class GCMCraftingMonitorScreen extends CraftingMonitorScreen
+public class CMIGCraftingMonitorScreen extends CraftingMonitorScreen
 {
 	private final LevelBlockPos networkPos;
 	private final Screen parent;
@@ -28,7 +28,7 @@ public class GCMCraftingMonitorScreen extends CraftingMonitorScreen
 	private Button cancelButton;
 	private Button cancelAllButton;
 
-	public GCMCraftingMonitorScreen(CraftingMonitorContainerMenu container, Inventory inventory, CCraftingMonitorOpenResultMessage message, Screen parent)
+	public CMIGCraftingMonitorScreen(CraftingMonitorContainerMenu container, Inventory inventory, CCraftingMonitorOpenResultMessage message, Screen parent)
 	{
 		super(container, inventory, message.getDisplayName());
 
@@ -40,8 +40,8 @@ public class GCMCraftingMonitorScreen extends CraftingMonitorScreen
 	public void onPostInit(int x, int y)
 	{
 		ICraftingMonitorScreenExtension extension = (ICraftingMonitorScreenExtension) this;
-		TabListWidget<CraftingMonitorContainerMenu> tabs = extension.gcm$getTabs();
-		List<IGridTab> tasks = extension.gcm$getTasks();
+		TabListWidget<CraftingMonitorContainerMenu> tabs = extension.rs_cmig$getTabs();
+		List<IGridTab> tasks = extension.rs_cmig$getTasks();
 
 		tabs.init(this.width);
 
@@ -53,10 +53,10 @@ public class GCMCraftingMonitorScreen extends CraftingMonitorScreen
 
 		this.cancelButton = addButton(x + 7, y + 201 - 20 - 7, cancelButtonWidth, 20, cancel, false, true, btn ->
 		{
-			if (extension.gcm$hasValidTabSelected())
+			if (extension.rs_cmig$hasValidTabSelected())
 			{
 				LevelBlockPos networkPos = this.getNetworkPos();
-				UUID taskId = ((ICraftingMonitorScreenTaskExtension) extension.gcm$getCurrentTab()).gcm$getId();
+				UUID taskId = ((ICraftingMonitorScreenTaskExtension) extension.rs_cmig$getCurrentTab()).rs_cmig$getId();
 				RS_CMIG.NETWORK_HANDLER.sendToServer(new SCraftingMonitorCancelMessage(networkPos, taskId));
 			}
 		});
@@ -76,11 +76,11 @@ public class GCMCraftingMonitorScreen extends CraftingMonitorScreen
 		super.tick(x, y);
 
 		ICraftingMonitorScreenExtension extension = (ICraftingMonitorScreenExtension) this;
-		List<IGridTab> tasks = extension.gcm$getTasks();
+		List<IGridTab> tasks = extension.rs_cmig$getTasks();
 
 		if (this.cancelButton != null)
 		{
-			this.cancelButton.active = extension.gcm$hasValidTabSelected();
+			this.cancelButton.active = extension.rs_cmig$hasValidTabSelected();
 		}
 
 		if (this.cancelAllButton != null)

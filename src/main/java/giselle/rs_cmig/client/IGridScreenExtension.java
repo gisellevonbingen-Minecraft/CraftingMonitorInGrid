@@ -6,8 +6,8 @@ import giselle.rs_cmig.common.LevelBlockPos;
 
 public interface IGridScreenExtension
 {
-	void gcm$setNetworkPos(LevelBlockPos pos);
+	void rs_cmig$setNetworkPos(LevelBlockPos pos);
 
 	@Nullable
-	LevelBlockPos gcm$getNetworkPos();
+	LevelBlockPos rs_cmig$getNetworkPos();
 }

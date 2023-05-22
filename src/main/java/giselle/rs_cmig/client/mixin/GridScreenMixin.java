@@ -23,11 +23,11 @@ public abstract class GridScreenMixin extends BaseScreen<GridContainerMenu> impl
 		super(container, xSize, ySize, inventory, title);
 	}
 
-	private LevelBlockPos gcm$networkPos;
+	private LevelBlockPos rs_cmig$networkPos;
 
 	private void addCraftingMonitorButton()
 	{
-		LevelBlockPos networkPos = this.gcm$getNetworkPos();
+		LevelBlockPos networkPos = this.rs_cmig$getNetworkPos();
 
 		if (networkPos != null)
 		{
@@ -43,20 +43,20 @@ public abstract class GridScreenMixin extends BaseScreen<GridContainerMenu> impl
 	}
 
 	@Override
-	public void gcm$setNetworkPos(LevelBlockPos networkPos)
+	public void rs_cmig$setNetworkPos(LevelBlockPos networkPos)
 	{
 		if (networkPos != null)
 		{
-			this.gcm$networkPos = networkPos;
+			this.rs_cmig$networkPos = networkPos;
 		}
 
 		this.addCraftingMonitorButton();
 	}
 
 	@Override
-	public LevelBlockPos gcm$getNetworkPos()
+	public LevelBlockPos rs_cmig$getNetworkPos()
 	{
-		return this.gcm$networkPos;
+		return this.rs_cmig$networkPos;
 	}
 
 }

@@ -8,13 +8,13 @@ import com.refinedmods.refinedstorage.network.craftingmonitor.CraftingMonitorUpd
 import giselle.rs_cmig.common.network.CCraftingMonitorUpdateMessage;
 import net.minecraft.server.level.ServerPlayer;
 
-public class CraftingManagerListener implements ICraftingMonitorListener
+public class CraftingMonitorListener implements ICraftingMonitorListener
 {
 	private final ServerPlayer player;
 	private final INetwork network;
 	private final ICraftingMonitor craftingMonitor;
 
-	public CraftingManagerListener(ServerPlayer player, INetwork network, ICraftingMonitor craftingMonitor)
+	public CraftingMonitorListener(ServerPlayer player, INetwork network, ICraftingMonitor craftingMonitor)
 	{
 		this.player = player;
 		this.network = network;

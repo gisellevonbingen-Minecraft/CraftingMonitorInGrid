@@ -10,13 +10,11 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.refinedmods.refinedstorage.RSContainers;
 import com.refinedmods.refinedstorage.api.network.INetwork;
 import com.refinedmods.refinedstorage.api.network.INetworkNodeGraphEntry;
 import com.refinedmods.refinedstorage.api.network.node.INetworkNode;
 import com.refinedmods.refinedstorage.apiimpl.API;
 import com.refinedmods.refinedstorage.apiimpl.network.node.CraftingMonitorNetworkNode;
-import com.refinedmods.refinedstorage.container.factory.CraftingMonitorContainerProvider;
 import com.refinedmods.refinedstorage.tile.craftingmonitor.CraftingMonitorTile;
 
 import giselle.grid_crafting_monitor.client.GCMClient;
@@ -28,7 +26,6 @@ import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
@@ -103,12 +100,11 @@ public class GCM
 		return API.instance().getNetworkManager(networkLevel).getNetwork(networkPos.getPos());
 	}
 
-	public static void openGui(ServerPlayerEntity player, CraftingMonitorTile craftingMonitorBE)
+	public static void openGui(ServerPlayerEntity player, INetwork network)
 	{
-		CraftingMonitorNetworkNode node = craftingMonitorBE.getNode();
-		CraftingMonitorContainerProvider provider = new CraftingMonitorContainerProvider(RSContainers.CRAFTING_MONITOR, node, craftingMonitorBE);
-		ITextComponent displayName = provider.getDisplayName();
-		GCM.NETWORK_HANDLER.sendTo(player, new CCraftingMonitorOpenResultMessage(new LevelBlockPos(node.getNetwork()), displayName));
+		CraftingMonitorTile craftingMonitor = GCM.findCraftingMontior(network);
+		CraftingMonitorNetworkNode node = craftingMonitor.getNode();
+		GCM.NETWORK_HANDLER.sendTo(player, new CCraftingMonitorOpenResultMessage(new LevelBlockPos(node.getNetwork()), node.getTitle()));
 	}
 
 	public static CraftingMonitorTile findCraftingMontior(INetwork network)

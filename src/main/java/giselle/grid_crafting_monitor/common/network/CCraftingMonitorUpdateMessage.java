@@ -33,7 +33,7 @@ public class CCraftingMonitorUpdateMessage
 	{
 		ctx.get().enqueueWork(() ->
 		{
-			BaseScreen.executeLater(GCMCraftingMonitorScreen.class, craftingMonitor -> craftingMonitor.setTasks(message.getImpl().getTasks()));
+			BaseScreen.executeLater(GCMCraftingMonitorScreen.class, screen -> screen.setTasks(message.getImpl().getTasks()));
 		});
 		ctx.get().setPacketHandled(true);
 	}

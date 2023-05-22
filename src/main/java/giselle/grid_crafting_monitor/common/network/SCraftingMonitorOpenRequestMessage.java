@@ -3,7 +3,6 @@ package giselle.grid_crafting_monitor.common.network;
 import java.util.function.Supplier;
 
 import com.refinedmods.refinedstorage.api.network.INetwork;
-import com.refinedmods.refinedstorage.tile.craftingmonitor.CraftingMonitorTile;
 
 import giselle.grid_crafting_monitor.common.GCM;
 import giselle.grid_crafting_monitor.common.LevelBlockPos;
@@ -44,10 +43,8 @@ public class SCraftingMonitorOpenRequestMessage extends NetworkMessage
 
 			if (network != null)
 			{
-				CraftingMonitorTile craftingMonitor = GCM.findCraftingMontior(network);
-				GCM.openGui(player, craftingMonitor);
+				GCM.openGui(player, network);
 			}
-
 		});
 		ctx.get().setPacketHandled(true);
 	}

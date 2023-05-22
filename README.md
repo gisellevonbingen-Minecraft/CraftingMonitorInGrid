@@ -1,4 +1,4 @@
-# Minecraft-GridCraftingMonitor
+# Minecraft-RS_CraftingMonitorInGrid
 
 Add crafting monitor button in grid
 

@@ -10,14 +10,14 @@ import com.refinedmods.refinedstorage.screen.widget.TabListWidget;
 
 public interface ICraftingMonitorScreenExtension
 {
-	List<IGridTab> gcm$getTasks();
+	List<IGridTab> rs_cmig$getTasks();
 
-	TabListWidget<CraftingMonitorContainerMenu> gcm$getTabs();
+	TabListWidget<CraftingMonitorContainerMenu> rs_cmig$getTabs();
 
 	@Nullable
-	IGridTab gcm$getCurrentTab();
+	IGridTab rs_cmig$getCurrentTab();
 
-	boolean gcm$hasValidTabSelected();
+	boolean rs_cmig$hasValidTabSelected();
 
-	void gcm$updateScrollbar();
+	void rs_cmig$updateScrollbar();
 }

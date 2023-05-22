@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import com.refinedmods.refinedstorage.network.craftingmonitor.CraftingMonitorUpdateMessage;
 import com.refinedmods.refinedstorage.screen.BaseScreen;
 
-import giselle.rs_cmig.client.screen.GCMCraftingMonitorScreen;
+import giselle.rs_cmig.client.screen.CMIGCraftingMonitorScreen;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -33,7 +33,7 @@ public class CCraftingMonitorUpdateMessage
 	{
 		ctx.get().enqueueWork(() ->
 		{
-			BaseScreen.executeLater(GCMCraftingMonitorScreen.class, screen -> screen.setTasks(message.getImpl().getTasks()));
+			BaseScreen.executeLater(CMIGCraftingMonitorScreen.class, screen -> screen.setTasks(message.getImpl().getTasks()));
 		});
 		ctx.get().setPacketHandled(true);
 	}

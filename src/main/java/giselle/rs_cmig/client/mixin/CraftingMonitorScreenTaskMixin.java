@@ -16,7 +16,7 @@ public abstract class CraftingMonitorScreenTaskMixin implements ICraftingMonitor
 	private UUID id;
 
 	@Override
-	public UUID gcm$getId()
+	public UUID rs_cmig$getId()
 	{
 		return this.id;
 	}

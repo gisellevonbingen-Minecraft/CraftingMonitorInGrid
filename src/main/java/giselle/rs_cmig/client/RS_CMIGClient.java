@@ -3,7 +3,7 @@ package giselle.rs_cmig.client;
 import com.refinedmods.refinedstorage.RSContainerMenus;
 import com.refinedmods.refinedstorage.container.CraftingMonitorContainerMenu;
 
-import giselle.rs_cmig.client.screen.GCMCraftingMonitorScreen;
+import giselle.rs_cmig.client.screen.CMIGCraftingMonitorScreen;
 import giselle.rs_cmig.common.network.CCraftingMonitorOpenResultMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
@@ -23,7 +23,7 @@ public class RS_CMIGClient
 		Minecraft minecraft = Minecraft.getInstance();
 		Player player = minecraft.player;
 		CraftingMonitorContainerMenu container = new CraftingMonitorContainerMenu(RSContainerMenus.CRAFTING_MONITOR, new EmptyCraftingMonitor(), null, player, 0);
-		GCMCraftingMonitorScreen screen = new GCMCraftingMonitorScreen(container, player.getInventory(), message, minecraft.screen);
+		CMIGCraftingMonitorScreen screen = new CMIGCraftingMonitorScreen(container, player.getInventory(), message, minecraft.screen);
 		minecraft.setScreen(screen);
 	}
 

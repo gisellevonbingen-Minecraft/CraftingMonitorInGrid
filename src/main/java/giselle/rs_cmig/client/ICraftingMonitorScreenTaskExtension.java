@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public interface ICraftingMonitorScreenTaskExtension
 {
-	UUID gcm$getId();
+	UUID rs_cmig$getId();
 }

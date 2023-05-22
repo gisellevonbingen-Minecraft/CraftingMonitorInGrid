@@ -44,7 +44,7 @@ public class RS_CMIG
 	public static final NetworkHandler NETWORK_HANDLER = new NetworkHandler();
 
 	private static final Map<INetwork, CraftingMonitorNetworkNode> NOCDE_CACHE = new HashMap<>();
-	private static final Map<UUID, List<CraftingManagerListener>> LISTENERS = new HashMap<>();
+	private static final Map<UUID, List<CraftingMonitorListener>> LISTENERS = new HashMap<>();
 
 	public RS_CMIG()
 	{
@@ -68,7 +68,7 @@ public class RS_CMIG
 
 		if (craftingMontior != null)
 		{
-			CraftingManagerListener listener = new CraftingManagerListener(player, network, craftingMontior.getNode());
+			CraftingMonitorListener listener = new CraftingMonitorListener(player, network, craftingMontior.getNode());
 			getMonitorings(player).add(listener);
 			network.getCraftingManager().addListener(listener);
 		}
@@ -77,10 +77,10 @@ public class RS_CMIG
 
 	public static void stopMonitoring(ServerPlayerEntity player, INetwork network)
 	{
-		List<CraftingManagerListener> list = getMonitorings(player);
-		List<CraftingManagerListener> filetered = list.stream().filter(l -> l.getNetwork() == network).collect(Collectors.toList());
+		List<CraftingMonitorListener> list = getMonitorings(player);
+		List<CraftingMonitorListener> filetered = list.stream().filter(l -> l.getNetwork() == network).collect(Collectors.toList());
 
-		for (CraftingManagerListener listener : filetered)
+		for (CraftingMonitorListener listener : filetered)
 		{
 			network.getCraftingManager().removeListener(listener);
 			list.remove(listener);
@@ -88,7 +88,7 @@ public class RS_CMIG
 
 	}
 
-	private static List<CraftingManagerListener> getMonitorings(ServerPlayerEntity player)
+	private static List<CraftingMonitorListener> getMonitorings(ServerPlayerEntity player)
 	{
 		return LISTENERS.computeIfAbsent(player.getUUID(), k -> new ArrayList<>());
 	}

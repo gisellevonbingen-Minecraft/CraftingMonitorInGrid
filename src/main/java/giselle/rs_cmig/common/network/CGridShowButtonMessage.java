@@ -46,7 +46,7 @@ public class CGridShowButtonMessage extends NetworkContainerMessage
 
 				if (screen.getMenu().containerId == message.getContainerId())
 				{
-					((IGridScreenExtension) screen).gcm$setNetworkPos(message.getNetworkPos());
+					((IGridScreenExtension) screen).rs_cmig$setNetworkPos(message.getNetworkPos());
 				}
 
 			}

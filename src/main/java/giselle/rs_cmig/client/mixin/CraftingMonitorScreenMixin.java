@@ -19,7 +19,7 @@ public abstract class CraftingMonitorScreenMixin implements ICraftingMonitorScre
 	private List<IGridTab> tasks;
 
 	@Override
-	public List<IGridTab> gcm$getTasks()
+	public List<IGridTab> rs_cmig$getTasks()
 	{
 		return this.tasks;
 	}
@@ -27,7 +27,7 @@ public abstract class CraftingMonitorScreenMixin implements ICraftingMonitorScre
 	@Shadow(remap = false)
 	private TabListWidget<CraftingMonitorContainer> tabs;
 
-	public TabListWidget<CraftingMonitorContainer> gcm$getTabs()
+	public TabListWidget<CraftingMonitorContainer> rs_cmig$getTabs()
 	{
 		return this.tabs;
 	}
@@ -39,7 +39,7 @@ public abstract class CraftingMonitorScreenMixin implements ICraftingMonitorScre
 	}
 
 	@Override
-	public IGridTab gcm$getCurrentTab()
+	public IGridTab rs_cmig$getCurrentTab()
 	{
 		return this.getCurrentTab();
 	}
@@ -51,7 +51,7 @@ public abstract class CraftingMonitorScreenMixin implements ICraftingMonitorScre
 	}
 
 	@Override
-	public boolean gcm$hasValidTabSelected()
+	public boolean rs_cmig$hasValidTabSelected()
 	{
 		return this.hasValidTabSelected();
 	}
@@ -63,7 +63,7 @@ public abstract class CraftingMonitorScreenMixin implements ICraftingMonitorScre
 	}
 
 	@Override
-	public void gcm$updateScrollbar()
+	public void rs_cmig$updateScrollbar()
 	{
 		this.updateScrollbar();
 	}

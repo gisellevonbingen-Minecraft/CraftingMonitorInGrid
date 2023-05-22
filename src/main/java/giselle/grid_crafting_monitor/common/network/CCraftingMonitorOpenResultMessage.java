@@ -2,16 +2,10 @@ package giselle.grid_crafting_monitor.common.network;
 
 import java.util.function.Supplier;
 
-import com.refinedmods.refinedstorage.RSContainerMenus;
-import com.refinedmods.refinedstorage.container.CraftingMonitorContainerMenu;
-
-import giselle.grid_crafting_monitor.client.EmptyCraftingMonitor;
-import giselle.grid_crafting_monitor.client.screen.GCMCraftingMonitorScreen;
+import giselle.grid_crafting_monitor.client.GCMClient;
 import giselle.grid_crafting_monitor.common.LevelBlockPos;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkEvent;
 
 public class CCraftingMonitorOpenResultMessage extends NetworkMessage
@@ -47,11 +41,7 @@ public class CCraftingMonitorOpenResultMessage extends NetworkMessage
 	{
 		ctx.get().enqueueWork(() ->
 		{
-			Minecraft minecraft = Minecraft.getInstance();
-			Player player = minecraft.player;
-			CraftingMonitorContainerMenu container = new CraftingMonitorContainerMenu(RSContainerMenus.CRAFTING_MONITOR, new EmptyCraftingMonitor(), null, player, 0);
-			GCMCraftingMonitorScreen screen = new GCMCraftingMonitorScreen(container, player.getInventory(), message, minecraft.screen);
-			minecraft.setScreen(screen);
+			GCMClient.openScreen(message);
 		});
 		ctx.get().setPacketHandled(true);
 	}

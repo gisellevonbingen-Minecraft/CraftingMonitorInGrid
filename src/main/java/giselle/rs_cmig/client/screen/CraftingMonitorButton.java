@@ -6,8 +6,8 @@ import com.refinedmods.refinedstorage.screen.BaseScreen;
 import com.refinedmods.refinedstorage.screen.widget.sidebutton.SideButton;
 import com.refinedmods.refinedstorage.util.ColorMap;
 
-import giselle.rs_cmig.common.RS_CMIG;
 import giselle.rs_cmig.common.LevelBlockPos;
+import giselle.rs_cmig.common.RS_CMIG;
 import giselle.rs_cmig.common.network.SCraftingMonitorOpenRequestMessage;
 import net.minecraft.world.item.ItemStack;
 

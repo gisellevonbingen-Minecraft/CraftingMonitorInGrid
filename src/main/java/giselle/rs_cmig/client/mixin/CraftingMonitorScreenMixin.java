@@ -27,6 +27,7 @@ public abstract class CraftingMonitorScreenMixin implements ICraftingMonitorScre
 	@Shadow(remap = false)
 	private TabListWidget<CraftingMonitorContainerMenu> tabs;
 
+	@Override
 	public TabListWidget<CraftingMonitorContainerMenu> rs_cmig$getTabs()
 	{
 		return this.tabs;

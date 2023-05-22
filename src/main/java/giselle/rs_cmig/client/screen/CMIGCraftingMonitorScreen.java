@@ -10,8 +10,8 @@ import com.refinedmods.refinedstorage.screen.widget.TabListWidget;
 
 import giselle.rs_cmig.client.ICraftingMonitorScreenExtension;
 import giselle.rs_cmig.client.ICraftingMonitorScreenTaskExtension;
-import giselle.rs_cmig.common.RS_CMIG;
 import giselle.rs_cmig.common.LevelBlockPos;
+import giselle.rs_cmig.common.RS_CMIG;
 import giselle.rs_cmig.common.network.CCraftingMonitorOpenResultMessage;
 import giselle.rs_cmig.common.network.SCraftingMonitorCancelMessage;
 import giselle.rs_cmig.common.network.SCraftingMonitorStopMonitoringMessage;

@@ -4,8 +4,8 @@ import java.util.function.Supplier;
 
 import com.refinedmods.refinedstorage.api.network.INetwork;
 
-import giselle.rs_cmig.common.RS_CMIG;
 import giselle.rs_cmig.common.LevelBlockPos;
+import giselle.rs_cmig.common.RS_CMIG;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;

@@ -20,7 +20,7 @@ import giselle.rs_cmig.client.RS_CMIGClient;
 import giselle.rs_cmig.common.network.CCraftingMonitorOpenResultMessage;
 import giselle.rs_cmig.common.network.NetworkHandler;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -93,7 +93,7 @@ public class RS_CMIG
 
 	public static INetwork getNetwork(ServerPlayer player, LevelBlockPos networkPos)
 	{
-		ResourceKey<Level> networkLevelKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, networkPos.getLevelName());
+		ResourceKey<Level> networkLevelKey = ResourceKey.create(Registries.DIMENSION, networkPos.getLevelName());
 		ServerLevel networkLevel = player.getServer().getLevel(networkLevelKey);
 		return API.instance().getNetworkManager(networkLevel).getNetwork(networkPos.getPos());
 	}

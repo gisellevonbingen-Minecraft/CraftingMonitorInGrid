@@ -1,6 +1,7 @@
 {
 	"required": true,
 	"package": "giselle.rs_cmig.client.mixin",
+	"minVersion": "0.0.0",
 	"compatibilityLevel": "JAVA_8",
 	"client": [
 		"GridScreenMixin",

@@ -3,8 +3,8 @@ package giselle.rs_cmig.client;
 import giselle.rs_cmig.client.screen.CMIGCraftingMonitorScreen;
 import giselle.rs_cmig.common.RS_CMIG;
 import giselle.rs_cmig.common.network.SCraftingMonitorStartMonitoringMessage;
-import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 
 public class EventHandlersClient
 {

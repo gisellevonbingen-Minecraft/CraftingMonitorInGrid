@@ -26,13 +26,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 
 @Mod(RS_CMIG.MODID)
 public class RS_CMIG
@@ -44,20 +43,22 @@ public class RS_CMIG
 	private static final Map<INetwork, CraftingMonitorNetworkNode> NOCDE_CACHE = new HashMap<>();
 	private static final Map<UUID, List<CraftingMonitorListener>> LISTENERS = new HashMap<>();
 
-	public RS_CMIG()
+	public RS_CMIG(IEventBus fml_bus)
 	{
-		DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> RS_CMIGClient::init);
+		if (FMLEnvironment.dist == Dist.CLIENT)
+		{
+			RS_CMIGClient.init(fml_bus);
+		}
 
-		IEventBus fml_bus = FMLJavaModLoadingContext.get().getModEventBus();
-		fml_bus.addListener(RS_CMIG::onCommonSetup);
+		fml_bus.addListener(RS_CMIG::onRegisterNetworkPackets);
 
-		IEventBus forge_bus = MinecraftForge.EVENT_BUS;
+		IEventBus forge_bus = NeoForge.EVENT_BUS;
 		forge_bus.register(EventHandlers.class);
 	}
 
-	private static void onCommonSetup(FMLCommonSetupEvent e)
+	private static void onRegisterNetworkPackets(RegisterPayloadHandlerEvent event)
 	{
-		NETWORK_HANDLER.register();
+		NETWORK_HANDLER.register(event.registrar(MODID));
 	}
 
 	public static void startMonitoring(ServerPlayer player, INetwork network)

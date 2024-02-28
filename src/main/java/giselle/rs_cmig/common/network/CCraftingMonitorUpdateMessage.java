@@ -1,16 +1,19 @@
 package giselle.rs_cmig.common.network;
 
-import java.util.function.Supplier;
-
 import com.refinedmods.refinedstorage.network.craftingmonitor.CraftingMonitorUpdateMessage;
 import com.refinedmods.refinedstorage.screen.BaseScreen;
 
 import giselle.rs_cmig.client.screen.CMIGCraftingMonitorScreen;
+import giselle.rs_cmig.common.RS_CMIG;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-public class CCraftingMonitorUpdateMessage
+public class CCraftingMonitorUpdateMessage implements CustomPacketPayload
 {
+	public static final ResourceLocation ID = new ResourceLocation(RS_CMIG.MODID, "crafting_monitor_update");
+
 	private final CraftingMonitorUpdateMessage impl;
 
 	public CCraftingMonitorUpdateMessage(CraftingMonitorUpdateMessage impl)
@@ -18,29 +21,34 @@ public class CCraftingMonitorUpdateMessage
 		this.impl = impl;
 	}
 
-	public static CCraftingMonitorUpdateMessage decode(FriendlyByteBuf buf)
+	public CCraftingMonitorUpdateMessage(FriendlyByteBuf buf)
 	{
-		CraftingMonitorUpdateMessage impl = CraftingMonitorUpdateMessage.decode(buf);
-		return new CCraftingMonitorUpdateMessage(impl);
+		this.impl = CraftingMonitorUpdateMessage.decode(buf);
 	}
 
-	public static void encode(CCraftingMonitorUpdateMessage message, FriendlyByteBuf buf)
+	@Override
+	public void write(FriendlyByteBuf pBuffer)
 	{
-		CraftingMonitorUpdateMessage.encode(message.getImpl(), buf);
+		this.impl.write(pBuffer);
 	}
 
-	public static void handle(CCraftingMonitorUpdateMessage message, Supplier<NetworkEvent.Context> ctx)
+	public static void handle(CCraftingMonitorUpdateMessage message, PlayPayloadContext ctx)
 	{
-		ctx.get().enqueueWork(() ->
+		ctx.workHandler().submitAsync(() ->
 		{
 			BaseScreen.executeLater(CMIGCraftingMonitorScreen.class, screen -> screen.setTasks(message.getImpl().getTasks()));
 		});
-		ctx.get().setPacketHandled(true);
 	}
 
 	public CraftingMonitorUpdateMessage getImpl()
 	{
 		return this.impl;
+	}
+
+	@Override
+	public ResourceLocation id()
+	{
+		return ID;
 	}
 
 }

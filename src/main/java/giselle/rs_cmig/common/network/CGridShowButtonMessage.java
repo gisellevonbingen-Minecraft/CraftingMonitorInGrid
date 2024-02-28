@@ -1,42 +1,38 @@
 package giselle.rs_cmig.common.network;
 
-import java.util.function.Supplier;
-
 import com.refinedmods.refinedstorage.screen.grid.GridScreen;
 
 import giselle.rs_cmig.client.IGridScreenExtension;
 import giselle.rs_cmig.common.LevelBlockPos;
+import giselle.rs_cmig.common.RS_CMIG;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 public class CGridShowButtonMessage extends NetworkContainerMessage
 {
-	protected CGridShowButtonMessage()
-	{
-
-	}
+	public static final ResourceLocation ID = new ResourceLocation(RS_CMIG.MODID, "grid_show_button");
 
 	public CGridShowButtonMessage(LevelBlockPos networkPos, int containerId)
 	{
 		super(networkPos, containerId);
 	}
 
-	public static CGridShowButtonMessage decode(FriendlyByteBuf buf)
+	public CGridShowButtonMessage(FriendlyByteBuf buf)
 	{
-		CGridShowButtonMessage message = new CGridShowButtonMessage();
-		NetworkContainerMessage.decode(message, buf);
-		return message;
+		super(buf);
 	}
 
-	public static void encode(CGridShowButtonMessage message, FriendlyByteBuf buf)
+	@Override
+	public void write(FriendlyByteBuf buf)
 	{
-		NetworkContainerMessage.encode(message, buf);
+		super.write(buf);
 	}
 
-	public static void handle(CGridShowButtonMessage message, Supplier<NetworkEvent.Context> ctx)
+	public static void handle(CGridShowButtonMessage message, PlayPayloadContext ctx)
 	{
-		ctx.get().enqueueWork(() ->
+		ctx.workHandler().submitAsync(() ->
 		{
 			Minecraft minecraft = Minecraft.getInstance();
 
@@ -46,7 +42,12 @@ public class CGridShowButtonMessage extends NetworkContainerMessage
 			}
 
 		});
-		ctx.get().setPacketHandled(true);
+	}
+
+	@Override
+	public ResourceLocation id()
+	{
+		return ID;
 	}
 
 }

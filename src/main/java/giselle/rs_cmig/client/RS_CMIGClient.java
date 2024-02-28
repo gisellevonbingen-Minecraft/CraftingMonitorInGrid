@@ -7,14 +7,14 @@ import giselle.rs_cmig.client.screen.CMIGCraftingMonitorScreen;
 import giselle.rs_cmig.common.network.CCraftingMonitorOpenResultMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.common.NeoForge;
 
 public class RS_CMIGClient
 {
-	public static void init()
+	public static void init(IEventBus fml_bus)
 	{
-		IEventBus forge_bus = MinecraftForge.EVENT_BUS;
+		IEventBus forge_bus = NeoForge.EVENT_BUS;
 		forge_bus.register(EventHandlersClient.class);
 	}
 

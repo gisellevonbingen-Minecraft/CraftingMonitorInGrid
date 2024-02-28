@@ -5,12 +5,7 @@ import net.minecraft.network.FriendlyByteBuf;
 
 public abstract class NetworkContainerMessage extends NetworkMessage
 {
-	private int containerId;
-
-	protected NetworkContainerMessage()
-	{
-
-	}
+	private final int containerId;
 
 	public NetworkContainerMessage(LevelBlockPos networkPos, int containerId)
 	{
@@ -18,16 +13,17 @@ public abstract class NetworkContainerMessage extends NetworkMessage
 		this.containerId = containerId;
 	}
 
-	protected static void decode(NetworkContainerMessage message, FriendlyByteBuf buf)
+	public NetworkContainerMessage(FriendlyByteBuf buf)
 	{
-		NetworkMessage.decode(message, buf);
-		message.containerId = buf.readInt();
+		super(buf);
+		this.containerId = buf.readInt();
 	}
 
-	protected static void encode(NetworkContainerMessage message, FriendlyByteBuf buf)
+	@Override
+	public void write(FriendlyByteBuf buf)
 	{
-		NetworkMessage.encode(message, buf);
-		buf.writeInt(message.getContainerId());
+		super.write(buf);
+		buf.writeInt(this.getContainerId());
 	}
 
 	public int getContainerId()

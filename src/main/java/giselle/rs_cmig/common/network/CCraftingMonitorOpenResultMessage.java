@@ -1,21 +1,18 @@
 package giselle.rs_cmig.common.network;
 
-import java.util.function.Supplier;
-
 import giselle.rs_cmig.client.RS_CMIGClient;
 import giselle.rs_cmig.common.LevelBlockPos;
+import giselle.rs_cmig.common.RS_CMIG;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 public class CCraftingMonitorOpenResultMessage extends NetworkMessage
 {
-	private Component displayName;
+	public static final ResourceLocation ID = new ResourceLocation(RS_CMIG.MODID, "crafting_monitor_open_result");
 
-	protected CCraftingMonitorOpenResultMessage()
-	{
-
-	}
+	private final Component displayName;
 
 	public CCraftingMonitorOpenResultMessage(LevelBlockPos networkPos, Component displayName)
 	{
@@ -23,32 +20,36 @@ public class CCraftingMonitorOpenResultMessage extends NetworkMessage
 		this.displayName = displayName;
 	}
 
-	public static CCraftingMonitorOpenResultMessage decode(FriendlyByteBuf buf)
+	public CCraftingMonitorOpenResultMessage(FriendlyByteBuf buf)
 	{
-		CCraftingMonitorOpenResultMessage message = new CCraftingMonitorOpenResultMessage();
-		NetworkMessage.decode(message, buf);
-		message.displayName = buf.readComponent();
-		return message;
+		super(buf);
+		this.displayName = buf.readComponent();
 	}
 
-	public static void encode(CCraftingMonitorOpenResultMessage message, FriendlyByteBuf buf)
+	@Override
+	public void write(FriendlyByteBuf buf)
 	{
-		NetworkMessage.encode(message, buf);
-		buf.writeComponent(message.getDisplayName());
+		super.write(buf);
+		buf.writeComponent(this.getDisplayName());
 	}
 
-	public static void handle(CCraftingMonitorOpenResultMessage message, Supplier<NetworkEvent.Context> ctx)
+	public static void handle(CCraftingMonitorOpenResultMessage message, PlayPayloadContext ctx)
 	{
-		ctx.get().enqueueWork(() ->
+		ctx.workHandler().submitAsync(() ->
 		{
 			RS_CMIGClient.openScreen(message);
 		});
-		ctx.get().setPacketHandled(true);
 	}
 
 	public Component getDisplayName()
 	{
 		return this.displayName;
+	}
+
+	@Override
+	public ResourceLocation id()
+	{
+		return ID;
 	}
 
 }

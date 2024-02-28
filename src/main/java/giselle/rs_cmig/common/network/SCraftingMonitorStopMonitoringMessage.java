@@ -1,52 +1,51 @@
 package giselle.rs_cmig.common.network;
 
-import java.util.function.Supplier;
-
 import com.refinedmods.refinedstorage.api.network.INetwork;
 
 import giselle.rs_cmig.common.LevelBlockPos;
 import giselle.rs_cmig.common.RS_CMIG;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 public class SCraftingMonitorStopMonitoringMessage extends NetworkMessage
 {
-	protected SCraftingMonitorStopMonitoringMessage()
-	{
-
-	}
+	public static final ResourceLocation ID = new ResourceLocation(RS_CMIG.MODID, "crafting_monitor_stop_monitoring");
 
 	public SCraftingMonitorStopMonitoringMessage(LevelBlockPos networkPos)
 	{
 		super(networkPos);
 	}
 
-	public static SCraftingMonitorStopMonitoringMessage decode(FriendlyByteBuf buf)
+	public SCraftingMonitorStopMonitoringMessage(FriendlyByteBuf buf)
 	{
-		SCraftingMonitorStopMonitoringMessage message = new SCraftingMonitorStopMonitoringMessage();
-		NetworkMessage.decode(message, buf);
-		return message;
+		super(buf);
 	}
 
-	public static void encode(SCraftingMonitorStopMonitoringMessage message, FriendlyByteBuf buf)
+	@Override
+	public void write(FriendlyByteBuf buf)
 	{
-		NetworkMessage.encode(message, buf);
+		super.write(buf);
 	}
 
-	public static void handle(SCraftingMonitorStopMonitoringMessage message, Supplier<NetworkEvent.Context> ctx)
+	public static void handle(SCraftingMonitorStopMonitoringMessage message, PlayPayloadContext ctx)
 	{
-		ctx.get().enqueueWork(() ->
+		ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() ->
 		{
-			ServerPlayer player = ctx.get().getSender();
-			INetwork network = RS_CMIG.getNetwork(player, message.getNetworkPos());
+			INetwork network = RS_CMIG.getNetwork((ServerPlayer) player, message.getNetworkPos());
 
 			if (network != null)
 			{
-				RS_CMIG.stopMonitoring(player, network);
+				RS_CMIG.stopMonitoring((ServerPlayer) player, network);
 			}
-		});
-		ctx.get().setPacketHandled(true);
+		}));
+	}
+
+	@Override
+	public ResourceLocation id()
+	{
+		return ID;
 	}
 
 }

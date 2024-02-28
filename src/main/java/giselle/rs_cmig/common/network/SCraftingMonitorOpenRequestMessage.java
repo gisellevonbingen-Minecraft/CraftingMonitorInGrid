@@ -1,52 +1,51 @@
 package giselle.rs_cmig.common.network;
 
-import java.util.function.Supplier;
-
 import com.refinedmods.refinedstorage.api.network.INetwork;
 
 import giselle.rs_cmig.common.LevelBlockPos;
 import giselle.rs_cmig.common.RS_CMIG;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 public class SCraftingMonitorOpenRequestMessage extends NetworkMessage
 {
-	protected SCraftingMonitorOpenRequestMessage()
-	{
-
-	}
+	public static final ResourceLocation ID = new ResourceLocation(RS_CMIG.MODID, "crafting_monitor_open_request");
 
 	public SCraftingMonitorOpenRequestMessage(LevelBlockPos networkPos)
 	{
 		super(networkPos);
 	}
 
-	public static SCraftingMonitorOpenRequestMessage decode(FriendlyByteBuf buf)
+	public SCraftingMonitorOpenRequestMessage(FriendlyByteBuf buf)
 	{
-		SCraftingMonitorOpenRequestMessage message = new SCraftingMonitorOpenRequestMessage();
-		NetworkMessage.decode(message, buf);
-		return message;
+		super(buf);
 	}
 
-	public static void encode(SCraftingMonitorOpenRequestMessage message, FriendlyByteBuf buf)
+	@Override
+	public void write(FriendlyByteBuf buf)
 	{
-		NetworkMessage.encode(message, buf);
+		super.write(buf);
 	}
 
-	public static void handle(SCraftingMonitorOpenRequestMessage message, Supplier<NetworkEvent.Context> ctx)
+	public static void handle(SCraftingMonitorOpenRequestMessage message, PlayPayloadContext ctx)
 	{
-		ctx.get().enqueueWork(() ->
+		ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() ->
 		{
-			ServerPlayer player = ctx.get().getSender();
-			INetwork network = RS_CMIG.getNetwork(player, message.getNetworkPos());
+			INetwork network = RS_CMIG.getNetwork((ServerPlayer) player, message.getNetworkPos());
 
 			if (network != null)
 			{
-				RS_CMIG.openGui(player, network);
+				RS_CMIG.openGui((ServerPlayer) player, network);
 			}
-		});
-		ctx.get().setPacketHandled(true);
+		}));
+	}
+
+	@Override
+	public ResourceLocation id()
+	{
+		return ID;
 	}
 
 }

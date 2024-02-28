@@ -1,43 +1,35 @@
 package giselle.rs_cmig.common.network;
 
-import giselle.rs_cmig.common.RS_CMIG;
-import net.minecraft.resources.ResourceLocation;
+import com.refinedmods.refinedstorage.RS;
+
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 
 public class NetworkHandler
 {
-	private final String protocolVersion = Integer.toString(1);
-	private final ResourceLocation name = RS_CMIG.rl("main_channel");
-	private final SimpleChannel channel = NetworkRegistry.ChannelBuilder//
-			.named(name)//
-			.clientAcceptedVersions(protocolVersion::equals)//
-			.serverAcceptedVersions(protocolVersion::equals)//
-			.networkProtocolVersion(() -> protocolVersion)//
-			.simpleChannel();
-
-	public void register()
+	public void register(IPayloadRegistrar registrar)
 	{
-		int id = 0;
-		this.channel.registerMessage(id++, CGridShowButtonMessage.class, CGridShowButtonMessage::encode, CGridShowButtonMessage::decode, CGridShowButtonMessage::handle);
-		this.channel.registerMessage(id++, SCraftingMonitorOpenRequestMessage.class, SCraftingMonitorOpenRequestMessage::encode, SCraftingMonitorOpenRequestMessage::decode, SCraftingMonitorOpenRequestMessage::handle);
-		this.channel.registerMessage(id++, CCraftingMonitorOpenResultMessage.class, CCraftingMonitorOpenResultMessage::encode, CCraftingMonitorOpenResultMessage::decode, CCraftingMonitorOpenResultMessage::handle);
-		this.channel.registerMessage(id++, SCraftingMonitorStartMonitoringMessage.class, SCraftingMonitorStartMonitoringMessage::encode, SCraftingMonitorStartMonitoringMessage::decode, SCraftingMonitorStartMonitoringMessage::handle);
-		this.channel.registerMessage(id++, SCraftingMonitorStopMonitoringMessage.class, SCraftingMonitorStopMonitoringMessage::encode, SCraftingMonitorStopMonitoringMessage::decode, SCraftingMonitorStopMonitoringMessage::handle);
-		this.channel.registerMessage(id++, CCraftingMonitorUpdateMessage.class, CCraftingMonitorUpdateMessage::encode, CCraftingMonitorUpdateMessage::decode, CCraftingMonitorUpdateMessage::handle);
-		this.channel.registerMessage(id++, SCraftingMonitorCancelMessage.class, SCraftingMonitorCancelMessage::encode, SCraftingMonitorCancelMessage::decode, SCraftingMonitorCancelMessage::handle);
+		registrar.play(CGridShowButtonMessage.ID, CGridShowButtonMessage::new, handler -> handler.client(CGridShowButtonMessage::handle));
+
+		registrar.play(SCraftingMonitorOpenRequestMessage.ID, SCraftingMonitorOpenRequestMessage::new, handler -> handler.server(SCraftingMonitorOpenRequestMessage::handle));
+		registrar.play(CCraftingMonitorOpenResultMessage.ID, CCraftingMonitorOpenResultMessage::new, handler -> handler.client(CCraftingMonitorOpenResultMessage::handle));
+
+		registrar.play(SCraftingMonitorStartMonitoringMessage.ID, SCraftingMonitorStartMonitoringMessage::new, handler -> handler.server(SCraftingMonitorStartMonitoringMessage::handle));
+		registrar.play(SCraftingMonitorStopMonitoringMessage.ID, SCraftingMonitorStopMonitoringMessage::new, handler -> handler.server(SCraftingMonitorStopMonitoringMessage::handle));
+
+		registrar.play(CCraftingMonitorUpdateMessage.ID, CCraftingMonitorUpdateMessage::new, handler -> handler.client(CCraftingMonitorUpdateMessage::handle));
+		registrar.play(SCraftingMonitorCancelMessage.ID, SCraftingMonitorCancelMessage::new, handler -> handler.server(SCraftingMonitorCancelMessage::handle));
 	}
 
-	public void sendTo(ServerPlayer player, Object message)
+	public void sendTo(ServerPlayer player, CustomPacketPayload message)
 	{
-		this.channel.send(PacketDistributor.PLAYER.with(() -> player), message);
+		RS.NETWORK_HANDLER.sendTo(player, message);
 	}
 
-	public void sendToServer(Object message)
+	public void sendToServer(CustomPacketPayload message)
 	{
-		this.channel.send(PacketDistributor.SERVER.noArg(), message);
+		RS.NETWORK_HANDLER.sendToServer(message);
 	}
 
 }

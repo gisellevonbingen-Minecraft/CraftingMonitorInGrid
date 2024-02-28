@@ -6,8 +6,8 @@ import com.refinedmods.refinedstorage.container.GridContainerMenu;
 
 import giselle.rs_cmig.common.network.CGridShowButtonMessage;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.event.entity.player.PlayerContainerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 
 public class EventHandlers
 {

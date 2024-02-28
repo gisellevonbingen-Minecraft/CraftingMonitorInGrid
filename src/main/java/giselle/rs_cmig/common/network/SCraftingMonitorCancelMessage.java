@@ -1,7 +1,6 @@
 package giselle.rs_cmig.common.network;
 
 import java.util.UUID;
-import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
@@ -10,18 +9,16 @@ import com.refinedmods.refinedstorage.api.network.INetwork;
 import giselle.rs_cmig.common.LevelBlockPos;
 import giselle.rs_cmig.common.RS_CMIG;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 public class SCraftingMonitorCancelMessage extends NetworkMessage
 {
+	public static final ResourceLocation ID = new ResourceLocation(RS_CMIG.MODID, "crafting_monitor_cancel");
+
 	@Nullable
-	private UUID taskId;
-
-	protected SCraftingMonitorCancelMessage()
-	{
-
-	}
+	private final UUID taskId;
 
 	public SCraftingMonitorCancelMessage(LevelBlockPos networkPos, @Nullable UUID taskId)
 	{
@@ -29,58 +26,61 @@ public class SCraftingMonitorCancelMessage extends NetworkMessage
 		this.taskId = taskId;
 	}
 
-	public static SCraftingMonitorCancelMessage decode(FriendlyByteBuf buf)
+	public SCraftingMonitorCancelMessage(FriendlyByteBuf buf)
 	{
-		SCraftingMonitorCancelMessage message = new SCraftingMonitorCancelMessage();
-		NetworkMessage.decode(message, buf);
+		super(buf);
 
 		boolean hasTaskId = buf.readBoolean();
 
 		if (hasTaskId)
 		{
-			message.taskId = buf.readUUID();
+			this.taskId = buf.readUUID();
 		}
 		else
 		{
-			message.taskId = null;
+			this.taskId = null;
 		}
 
-		return message;
 	}
 
-	public static void encode(SCraftingMonitorCancelMessage message, FriendlyByteBuf buf)
+	@Override
+	public void write(FriendlyByteBuf buf)
 	{
-		NetworkMessage.encode(message, buf);
+		super.write(buf);
 
-		boolean hasTaskId = message.taskId != null;
+		boolean hasTaskId = this.taskId != null;
 		buf.writeBoolean(hasTaskId);
 
 		if (hasTaskId)
 		{
-			buf.writeUUID(message.taskId);
+			buf.writeUUID(this.taskId);
 		}
 
 	}
 
-	public static void handle(SCraftingMonitorCancelMessage message, Supplier<NetworkEvent.Context> ctx)
+	public static void handle(SCraftingMonitorCancelMessage message, PlayPayloadContext ctx)
 	{
-		ctx.get().enqueueWork(() ->
+		ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() ->
 		{
-			ServerPlayer player = ctx.get().getSender();
-			INetwork network = RS_CMIG.getNetwork(player, message.getNetworkPos());
+			INetwork network = RS_CMIG.getNetwork((ServerPlayer) player, message.getNetworkPos());
 
 			if (network != null)
 			{
-				network.getItemGridHandler().onCraftingCancelRequested(player, message.getTaskId());
+				network.getItemGridHandler().onCraftingCancelRequested((ServerPlayer) player, message.getTaskId());
 			}
-		});
-		ctx.get().setPacketHandled(true);
+		}));
 	}
 
 	@Nullable
 	public UUID getTaskId()
 	{
 		return taskId;
+	}
+
+	@Override
+	public ResourceLocation id()
+	{
+		return ID;
 	}
 
 }

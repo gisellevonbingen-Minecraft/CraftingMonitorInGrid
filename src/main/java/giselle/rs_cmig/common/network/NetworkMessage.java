@@ -2,29 +2,26 @@ package giselle.rs_cmig.common.network;
 
 import giselle.rs_cmig.common.LevelBlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-public abstract class NetworkMessage
+public abstract class NetworkMessage implements CustomPacketPayload
 {
-	private LevelBlockPos networkPos;
-
-	protected NetworkMessage()
-	{
-
-	}
+	private final LevelBlockPos networkPos;
 
 	public NetworkMessage(LevelBlockPos networkPos)
 	{
 		this.networkPos = networkPos;
 	}
 
-	protected static void decode(NetworkMessage message, FriendlyByteBuf buf)
+	public NetworkMessage(FriendlyByteBuf buf)
 	{
-		message.networkPos = new LevelBlockPos(buf);
+		this.networkPos = new LevelBlockPos(buf);
 	}
 
-	protected static void encode(NetworkMessage message, FriendlyByteBuf buf)
+	@Override
+	public void write(FriendlyByteBuf buf)
 	{
-		message.getNetworkPos().encode(buf);
+		this.getNetworkPos().encode(buf);
 	}
 
 	public LevelBlockPos getNetworkPos()

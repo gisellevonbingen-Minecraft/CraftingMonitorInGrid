@@ -1,52 +1,74 @@
 package giselle.rs_cmig.common.network;
 
-import java.util.function.Supplier;
-
-import com.refinedmods.refinedstorage.screen.grid.GridScreen;
+import com.refinedmods.refinedstorage.common.grid.screen.AbstractGridScreen;
 
 import giselle.rs_cmig.client.IGridScreenExtension;
 import giselle.rs_cmig.common.LevelBlockPos;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public class CGridShowButtonMessage extends NetworkContainerMessage
+public class CGridShowButtonMessage extends AbstractMessage
 {
-	protected CGridShowButtonMessage()
-	{
+	public static final MessageBuilder<CGridShowButtonMessage> BUILDER = new MessageBuilder<>("grid_show_button", CGridShowButtonMessage::new);
 
+	private final LevelBlockPos autocraftingMonitor;
+	private final int containerId;
+
+	public CGridShowButtonMessage(LevelBlockPos autocraftingMonitor, int containerId)
+	{
+		this.autocraftingMonitor = autocraftingMonitor;
+		this.containerId = containerId;
 	}
 
-	public CGridShowButtonMessage(LevelBlockPos networkPos, int containerId)
+	public CGridShowButtonMessage(RegistryFriendlyByteBuf buf)
 	{
-		super(networkPos, containerId);
+		super(buf);
+
+		this.autocraftingMonitor = LevelBlockPos.decode(buf);
+		this.containerId = buf.readInt();
 	}
 
-	public static CGridShowButtonMessage decode(FriendlyByteBuf buf)
+	@Override
+	public void encode(RegistryFriendlyByteBuf buf)
 	{
-		CGridShowButtonMessage message = new CGridShowButtonMessage();
-		NetworkContainerMessage.decode(message, buf);
-		return message;
+		super.encode(buf);
+
+		LevelBlockPos.encode(buf, this.autocraftingMonitor);
+		buf.writeInt(this.containerId);
 	}
 
-	public static void encode(CGridShowButtonMessage message, FriendlyByteBuf buf)
+	@Override
+	public void handle(IPayloadContext ctx)
 	{
-		NetworkContainerMessage.encode(message, buf);
-	}
-
-	public static void handle(CGridShowButtonMessage message, Supplier<NetworkEvent.Context> ctx)
-	{
-		ctx.get().enqueueWork(() ->
+		super.handle(ctx);
+		ctx.enqueueWork(() ->
 		{
 			Minecraft minecraft = Minecraft.getInstance();
 
-			if (minecraft.screen instanceof GridScreen screen && screen.getMenu().containerId == message.getContainerId())
+			if (minecraft.screen instanceof AbstractGridScreen screen && screen.getMenu().containerId == this.getContainerId())
 			{
-				((IGridScreenExtension) screen).rs_cmig$setNetworkPos(message.getNetworkPos());
+				((IGridScreenExtension) screen).rs_cmig$setAutocraftingMonitor(this.getAutocraftingMonitor());
 			}
 
 		});
-		ctx.get().setPacketHandled(true);
+	}
+
+	@Override
+	public Type<? extends CustomPacketPayload> type()
+	{
+		return BUILDER.type();
+	}
+
+	public LevelBlockPos getAutocraftingMonitor()
+	{
+		return this.autocraftingMonitor;
+	}
+
+	public int getContainerId()
+	{
+		return this.containerId;
 	}
 
 }

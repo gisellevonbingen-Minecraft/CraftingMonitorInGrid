@@ -1,27 +1,20 @@
 package giselle.rs_cmig.common;
 
-import com.refinedmods.refinedstorage.api.network.INetwork;
-
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-public class LevelBlockPos
+public record LevelBlockPos(ResourceKey<Level> dimension, BlockPos pos)
 {
-	private ResourceLocation levelName;
-	private BlockPos pos;
-
-	public LevelBlockPos(ResourceLocation levelName, BlockPos pos)
-	{
-		this.levelName = levelName;
-		this.pos = pos;
-	}
-
 	public LevelBlockPos(Level level, BlockPos pos)
 	{
-		this(level.dimension().location(), pos);
+		this(level.dimension(), pos);
 	}
 
 	public LevelBlockPos(BlockEntity blockEntity)
@@ -29,31 +22,28 @@ public class LevelBlockPos
 		this(blockEntity.getLevel(), blockEntity.getBlockPos());
 	}
 
-	public LevelBlockPos(INetwork network)
+	public LevelBlockPos(GlobalPos globalPos)
 	{
-		this(network.getLevel(), network.getPosition());
+		this(globalPos.dimension(), globalPos.pos());
 	}
 
-	public LevelBlockPos(FriendlyByteBuf buf)
+	public BlockEntity blockEntity(MinecraftServer server)
 	{
-		this.levelName = buf.readResourceLocation();
-		this.pos = buf.readBlockPos();
+		ServerLevel level = server.getLevel(this.dimension);
+		return level == null ? null : level.getBlockEntity(this.pos);
 	}
 
-	public void encode(FriendlyByteBuf buf)
+	public static LevelBlockPos decode(FriendlyByteBuf buf)
 	{
-		buf.writeResourceLocation(this.levelName);
-		buf.writeBlockPos(this.pos);
+		ResourceKey<Level> dimension = buf.readResourceKey(Registries.DIMENSION);
+		BlockPos pos = buf.readBlockPos();
+		return new LevelBlockPos(dimension, pos);
 	}
 
-	public ResourceLocation getLevelName()
+	public static void encode(FriendlyByteBuf buf, LevelBlockPos value)
 	{
-		return this.levelName;
-	}
-
-	public BlockPos getPos()
-	{
-		return this.pos;
+		buf.writeResourceKey(value.dimension);
+		buf.writeBlockPos(value.pos);
 	}
 
 }

@@ -1,158 +1,113 @@
 package giselle.rs_cmig.common;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.refinedmods.refinedstorage.api.network.INetwork;
-import com.refinedmods.refinedstorage.api.network.INetworkNodeGraphEntry;
-import com.refinedmods.refinedstorage.apiimpl.API;
-import com.refinedmods.refinedstorage.apiimpl.network.node.CraftingMonitorNetworkNode;
-import com.refinedmods.refinedstorage.blockentity.craftingmonitor.CraftingMonitorBlockEntity;
+import com.refinedmods.refinedstorage.api.network.Network;
+import com.refinedmods.refinedstorage.api.network.node.GraphNetworkComponent;
+import com.refinedmods.refinedstorage.api.network.node.container.NetworkNodeContainer;
+import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.AutocraftingMonitorBlockEntity;
+import com.refinedmods.refinedstorage.common.support.network.AbstractBaseNetworkNodeContainerBlockEntity;
 
-import giselle.rs_cmig.client.RS_CMIGClient;
-import giselle.rs_cmig.common.network.CCraftingMonitorOpenResultMessage;
-import giselle.rs_cmig.common.network.NetworkHandler;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
+import giselle.rs_cmig.common.network.CGridShowButtonMessage;
+import giselle.rs_cmig.common.network.SAutocraftingMonitorOpenRequestMessage;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 @Mod(RS_CMIG.MODID)
 public class RS_CMIG
 {
 	public static final String MODID = "rs_cmig";
 	public static final Logger LOGGER = LogManager.getLogger();
-	public static final NetworkHandler NETWORK_HANDLER = new NetworkHandler();
 
-	private static final Map<INetwork, CraftingMonitorNetworkNode> NOCDE_CACHE = new HashMap<>();
-	private static final Map<UUID, List<CraftingMonitorListener>> LISTENERS = new HashMap<>();
+	private static final Map<Network, AutocraftingMonitorBlockEntity> BLOCK_ENTITY_CACHE = new HashMap<>();
 
-	public RS_CMIG()
+	public RS_CMIG(ModContainer modContainer, Dist dist)
 	{
-		DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> RS_CMIGClient::init);
+		IEventBus fml_bus = ModLoadingContext.get().getActiveContainer().getEventBus();
+		fml_bus.addListener(RS_CMIG::onRegisterPayloadHandlers);
 
-		IEventBus fml_bus = FMLJavaModLoadingContext.get().getModEventBus();
-		fml_bus.addListener(RS_CMIG::onCommonSetup);
-
-		IEventBus forge_bus = MinecraftForge.EVENT_BUS;
-		forge_bus.register(EventHandlers.class);
+		IEventBus forge_bus = NeoForge.EVENT_BUS;
+		forge_bus.register(CommonEventHandlers.class);
 	}
 
-	private static void onCommonSetup(FMLCommonSetupEvent e)
+	private static void onRegisterPayloadHandlers(RegisterPayloadHandlersEvent e)
 	{
-		NETWORK_HANDLER.register();
+		String modVersion = ModList.get().getModContainerById(MODID).get().getModInfo().getVersion().toString();
+		PayloadRegistrar registry = e.registrar(MODID).versioned(modVersion);
+
+		CGridShowButtonMessage.BUILDER.playToClient(registry);
+		SAutocraftingMonitorOpenRequestMessage.BUILDER.playToServer(registry);
 	}
 
-	public static void startMonitoring(ServerPlayer player, INetwork network)
+	public static Network getNetwork(ServerPlayer player, LevelBlockPos pos)
 	{
-		CraftingMonitorBlockEntity craftingMontior = RS_CMIG.findCraftingMontior(network);
-
-		if (craftingMontior != null)
+		if (pos.blockEntity(player.server) instanceof AbstractBaseNetworkNodeContainerBlockEntity<?> blockEntity)
 		{
-			CraftingMonitorListener listener = new CraftingMonitorListener(player, network, craftingMontior.getNode());
-			getMonitorings(player).add(listener);
-			network.getCraftingManager().addListener(listener);
+			return blockEntity.getNetworkForItem();
+		}
+		else
+		{
+			return null;
 		}
 
 	}
 
-	public static void stopMonitoring(ServerPlayer player, INetwork network)
+	public static AutocraftingMonitorBlockEntity findAutocraftingMontior(MinecraftServer server, Network network)
 	{
-		List<CraftingMonitorListener> list = getMonitorings(player);
-		List<CraftingMonitorListener> filetered = list.stream().filter(l -> l.getNetwork() == network).collect(Collectors.toList());
+		AutocraftingMonitorBlockEntity blockEntity = BLOCK_ENTITY_CACHE.get(network);
 
-		for (CraftingMonitorListener listener : filetered)
+		if (blockEntity != null)
 		{
-			network.getCraftingManager().removeListener(listener);
-			list.remove(listener);
-		}
-
-	}
-
-	private static List<CraftingMonitorListener> getMonitorings(ServerPlayer player)
-	{
-		return LISTENERS.computeIfAbsent(player.getUUID(), k -> new ArrayList<>());
-	}
-
-	public static INetwork getNetwork(ServerPlayer player, LevelBlockPos networkPos)
-	{
-		ResourceKey<Level> networkLevelKey = ResourceKey.create(Registries.DIMENSION, networkPos.getLevelName());
-		ServerLevel networkLevel = player.getServer().getLevel(networkLevelKey);
-		return API.instance().getNetworkManager(networkLevel).getNetwork(networkPos.getPos());
-	}
-
-	public static void openGui(ServerPlayer player, INetwork network)
-	{
-		CraftingMonitorBlockEntity craftingMonitor = RS_CMIG.findCraftingMontior(network);
-		CraftingMonitorNetworkNode node = craftingMonitor.getNode();
-		RS_CMIG.NETWORK_HANDLER.sendTo(player, new CCraftingMonitorOpenResultMessage(new LevelBlockPos(node.getNetwork()), node.getTitle()));
-	}
-
-	public static CraftingMonitorBlockEntity findCraftingMontior(INetwork network)
-	{
-		CraftingMonitorNetworkNode node = NOCDE_CACHE.get(network);
-
-		if (node != null)
-		{
-			if (node.getLevel().getBlockEntity(node.getPos()) instanceof CraftingMonitorBlockEntity blockEntity)
+			if (blockEntity.getNetworkForItem() == network)
 			{
-				if (blockEntity.getNode().getNetwork() == network)
-				{
-					return blockEntity;
-				}
-
+				return blockEntity;
 			}
 
 		}
 
-		CraftingMonitorBlockEntity craftingMonitorBlockEntity = findCraftingMontior0(network);
+		AutocraftingMonitorBlockEntity found = findAutocraftingMontior0(server, network);
 
-		if (craftingMonitorBlockEntity != null)
+		if (found != null)
 		{
-			NOCDE_CACHE.put(network, craftingMonitorBlockEntity.getNode());
+			BLOCK_ENTITY_CACHE.put(network, found);
 		}
 		else
 		{
-			NOCDE_CACHE.remove(network);
+			BLOCK_ENTITY_CACHE.remove(network);
 		}
 
-		return craftingMonitorBlockEntity;
+		return found;
 	}
 
-	private static CraftingMonitorBlockEntity findCraftingMontior0(INetwork network)
+	private static AutocraftingMonitorBlockEntity findAutocraftingMontior0(MinecraftServer server, Network network)
 	{
 		if (network == null)
 		{
 			return null;
 		}
 
-		for (INetworkNodeGraphEntry entry : network.getNodeGraph().all())
+		for (NetworkNodeContainer container : network.getComponent(GraphNetworkComponent.class).getContainers())
 		{
-			if (entry.getNode() instanceof CraftingMonitorNetworkNode node)
+			if (container instanceof InWorldNetworkNodeContainer inWorldContainer)
 			{
-				BlockPos pos = node.getPos();
-				Level level = node.getLevel();
-
-				if (level.getBlockEntity(pos) instanceof CraftingMonitorBlockEntity blockEntity)
+				if (new LevelBlockPos(inWorldContainer.getPosition()).blockEntity(server) instanceof AutocraftingMonitorBlockEntity autocraftingMonitor)
 				{
-					return blockEntity;
+					return autocraftingMonitor;
 				}
 
 			}
@@ -164,7 +119,7 @@ public class RS_CMIG
 
 	public static ResourceLocation rl(String path)
 	{
-		return new ResourceLocation(MODID, path);
+		return ResourceLocation.fromNamespaceAndPath(MODID, path);
 	}
 
 }
